@@ -1,8 +1,12 @@
 const express = require("express");
 require("dotenv").config();
-const { default: mongoose } = require("mongoose");
+const mongoose = require("mongoose");
 const app = express();
 const port = process.env.PORT || 3000;
+
+//routes
+const bookRoute = require("./src/routes/book");
+app.use("/api/book", bookRoute);
 
 async function main() {
   await mongoose.connect(process.env.MONGODB_URI);
