@@ -14,7 +14,7 @@ const postBook = async (req, res) => {
 const getAllBooks = async (req, res) => {
   try {
     const books = await Book.find();
-    res.status(200).send({ data: books });
+    res.status(200).send(books);
   } catch (error) {
     console.log(error);
     res.status(500).send("something went wrong");
@@ -26,7 +26,7 @@ const getSingleBook = async (req, res) => {
     const { id } = req.params;
     const book = await Book.findById(id);
     !book && res.status(404).send("book doesn't exist");
-    res.status(200).send({ data: book });
+    res.status(200).send(book);
   } catch (error) {
     console.log(error);
     res.status(500).send("something went wrong");
