@@ -3,6 +3,9 @@ require("dotenv").config();
 const mongoose = require("mongoose");
 const cors = require("cors");
 
+const bookRoute = require("./src/routes/book");
+const orderRoute = require("./src/routes/order");
+
 const app = express();
 const port = process.env.PORT || 3000;
 
@@ -17,8 +20,8 @@ app.use(
 );
 
 //routes
-const bookRoute = require("./src/routes/book");
 app.use("/api/book", bookRoute);
+app.use("/api/order", orderRoute);
 
 async function main() {
   await mongoose.connect(process.env.MONGODB_URI);
