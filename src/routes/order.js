@@ -1,5 +1,5 @@
 const express = require("express");
-const { createOrder, getAllOrdersEmail } = require("../controller/order");
+const { createOrder, getUserOrders } = require("../controller/order");
 
 const router = express.Router();
 
@@ -7,6 +7,6 @@ const router = express.Router();
 router.post("/create-order", createOrder);
 
 //get order end point
-router.get("/:uid", getAllOrdersEmail);
+router.get("/:uid", getUserOrders);
 
 module.exports = router;

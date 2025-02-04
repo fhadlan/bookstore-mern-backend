@@ -13,9 +13,22 @@ const createOrder = async (req, res) => {
   }
 };
 
-const getAllOrdersEmail = async (req, res) => {};
+const getUserOrders = async (req, res) => {
+  try {
+    const { uid } = req.params;
+    const orders = await Order.find({ userId: uid }).populate(
+      "productsId",
+      "title newPrice"
+    );
+    !orders && res.status(404).send("You have no orders");
+    res.status(200).send(orders);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send("something went wrong");
+  }
+};
 
 module.exports = {
   createOrder,
-  getAllOrdersEmail,
+  getUserOrders,
 };
