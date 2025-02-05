@@ -5,6 +5,7 @@ const cors = require("cors");
 
 const bookRoute = require("./src/routes/book");
 const orderRoute = require("./src/routes/order");
+const userRoute = require("./src/routes/user");
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -22,6 +23,7 @@ app.use(
 //routes
 app.use("/api/book", bookRoute);
 app.use("/api/order", orderRoute);
+app.use("/api/user", userRoute);
 
 async function main() {
   await mongoose.connect(process.env.MONGODB_URI);
