@@ -63,10 +63,26 @@ const deleteBook = async (req, res) => {
   }
 };
 
+const getBooksTable = async (req, res) => {
+  try {
+    const { page } = req.params;
+    const books = await Book.find()
+      .skip((page - 1) * 10)
+      .limit(10);
+    const count = await Book.countDocuments();
+    const totalPages = Math.ceil(count / 10);
+    res.status(200).send({ books, totalPages });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send("something went wrong");
+  }
+};
+
 module.exports = {
   postBook,
   getAllBooks,
   getSingleBook,
   updateBook,
   deleteBook,
+  getBooksTable,
 };
