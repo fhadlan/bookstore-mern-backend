@@ -31,8 +31,13 @@ app.use("/api/user", userRoute);
 // static
 app.use(
   helmet({
-    contentSecurityPolicy: false,
-    crossOriginResourcePolicy: { policy: "same-origin" },
+    crossOriginResourcePolicy: { policy: "cross-origin" },
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        imgSrc: ["'self'", "data:", "http://localhost:5172"], // Allow images from your server
+      },
+    },
   })
 );
 app.use(
