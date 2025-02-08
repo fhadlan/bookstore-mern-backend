@@ -22,7 +22,12 @@ router.post(
   saveRelativePath,
   postBook
 );
-router.put("/update-book/:id", verifyUserToken, updateBook);
+router.put(
+  "/update-book/:id",
+  upload.single("coverImage"),
+  saveRelativePath,
+  updateBook
+);
 router.delete("/delete-book/:id", verifyUserToken, deleteBook);
 router.get("/get-books-table/:page", getBooksTable);
 

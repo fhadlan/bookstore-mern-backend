@@ -1,5 +1,6 @@
 const Book = require("../models/book");
-
+const path = require("path");
+const fs = require("fs");
 const postBook = async (req, res) => {
   try {
     const { title, description, category, trending, oldPrice, newPrice } =
@@ -47,15 +48,36 @@ const getSingleBook = async (req, res) => {
 const updateBook = async (req, res) => {
   try {
     const { id } = req.params;
-    const updatedBook = await Book.findByIdAndUpdate(id, req.body, {
+    const bookData = {
+      title: req.body.title,
+      description: req.body.description,
+      category: req.body.category,
+      trending: req.body.trending === "true" ? true : false,
+      oldPrice: req.body.oldPrice,
+      newPrice: req.body.newPrice, // Handle file uploads
+    };
+
+    const book = await Book.findById(id);
+    if (req.file) {
+      const oldImagePath = path.join(__dirname, "../../", book.coverImage);
+      if (fs.existsSync(oldImagePath)) {
+        fs.unlinkSync(oldImagePath);
+      }
+      bookData.coverImage = req.file.path;
+    } else {
+      bookData.coverImage = book.coverImage;
+    }
+
+    const updatedBook = await Book.findByIdAndUpdate(id, bookData, {
       new: true,
     });
+
     !updatedBook && res.status(404).send("book doesn't exist");
     res
       .status(200)
       .send({ message: "book data updated successfully", data: updatedBook });
   } catch (error) {
-    console.log(error);
+    //console.log(error);
     res.status(500).send("something went wrong");
   }
 };
