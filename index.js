@@ -2,11 +2,14 @@ const express = require("express");
 require("dotenv").config();
 const mongoose = require("mongoose");
 const cors = require("cors");
+const helmet = require("helmet");
 
+//routes
 const bookRoute = require("./src/routes/book");
 const orderRoute = require("./src/routes/order");
 const userRoute = require("./src/routes/user");
 
+//server
 const app = express();
 const port = process.env.PORT || 3000;
 
@@ -24,6 +27,24 @@ app.use(
 app.use("/api/book", bookRoute);
 app.use("/api/order", orderRoute);
 app.use("/api/user", userRoute);
+
+// static
+app.use(
+  helmet({
+    contentSecurityPolicy: false,
+    crossOriginResourcePolicy: { policy: "same-origin" },
+  })
+);
+app.use(
+  "/uploads/coverImages",
+  (req, res, next) => {
+    if (req.url.includes("..") || req.url.includes(".git")) {
+      return res.status(403).json({ error: "Access Denied" });
+    }
+    next();
+  },
+  express.static("uploads/coverImages")
+);
 
 async function main() {
   await mongoose.connect(process.env.MONGODB_URI);

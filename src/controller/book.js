@@ -2,7 +2,18 @@ const Book = require("../models/book");
 
 const postBook = async (req, res) => {
   try {
-    const newBook = await Book({ ...req.body });
+    const { title, description, category, trending, oldPrice, newPrice } =
+      req.body;
+
+    const newBook = new Book({
+      title,
+      description,
+      category,
+      coverImage: req.file.path,
+      trending: trending === "true" ? true : false,
+      oldPrice,
+      newPrice,
+    });
     await newBook.save();
     res.status(200).send({ message: "data added successfully", data: newBook });
   } catch (error) {
