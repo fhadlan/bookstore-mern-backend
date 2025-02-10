@@ -18,12 +18,14 @@ router.get("/", getAllBooks);
 router.get("/:id", getSingleBook);
 router.post(
   "/create-book",
+  verifyUserToken,
   upload.single("coverImage"),
   saveRelativePath,
   postBook
 );
 router.put(
   "/update-book/:id",
+  verifyUserToken,
   upload.single("coverImage"),
   saveRelativePath,
   updateBook
