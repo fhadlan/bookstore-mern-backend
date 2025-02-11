@@ -17,7 +17,7 @@ const port = process.env.PORT || 3000;
 app.use(express.json());
 app.use(
   cors({
-    origin: "http://bookstore-mern-frontend-dusky.vercel.app",
+    origin: "https://bookstore-mern-frontend-dusky.vercel.app",
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   })
@@ -38,7 +38,7 @@ app.use(
         imgSrc: [
           "'self'",
           "data:",
-          "http://bookstore-mern-frontend-dusky.vercel.app",
+          "https://bookstore-mern-frontend-dusky.vercel.app",
         ], // Allow images from your server
       },
     },
@@ -67,4 +67,6 @@ main()
   .then(() => console.log("mongodb connected"))
   .catch((err) => console.log(err));
 
-module.exports = app;
+app.listen(port, () => {
+  console.log(`Example app listening on port ${port}`);
+});
