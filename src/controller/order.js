@@ -46,8 +46,27 @@ const cancelOrder = async (req, res) => {
   }
 };
 
+const manageOrders = async (req, res) => {
+  try {
+    const { page } = req.params;
+    const orders = await Order.find()
+      .sort({ createdAt: -1 })
+      .populate("productsId", "title newPrice")
+      .skip((page - 1) * 10)
+      .limit(10)
+      .sort({ createdAt: -1 });
+    const count = await Order.countDocuments();
+    const totalPages = Math.ceil(count / 10);
+    res.status(200).json({ orders, totalPages });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send("something went wrong");
+  }
+};
+
 module.exports = {
   createOrder,
   getUserOrders,
   cancelOrder,
+  manageOrders,
 };
