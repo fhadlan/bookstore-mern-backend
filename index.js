@@ -17,7 +17,10 @@ const port = process.env.PORT || 3000;
 app.use(express.json());
 app.use(
   cors({
-    origin: "https://bookstore-mern-frontend-dusky.vercel.app",
+    origin: [
+      "https://bookstore-mern-frontend-dusky.vercel.app",
+      "http://localhost:5173",
+    ],
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   })
@@ -28,33 +31,36 @@ app.use("/api/book", bookRoute);
 app.use("/api/order", orderRoute);
 app.use("/api/user", userRoute);
 
-// static
-app.use(
-  helmet({
-    crossOriginResourcePolicy: { policy: "cross-origin" },
-    contentSecurityPolicy: {
-      directives: {
-        defaultSrc: ["'self'"],
-        imgSrc: [
-          "'self'",
-          "data:",
-          "https://bookstore-mern-frontend-dusky.vercel.app",
-        ], // Allow images from your server
-      },
-    },
-  })
-);
+//security
+app.use(helmet());
 
-app.use(
-  "/uploads/coverImages",
-  (req, res, next) => {
-    if (req.url.includes("..") || req.url.includes(".git")) {
-      return res.status(403).json({ error: "Access Denied" });
-    }
-    next();
-  },
-  express.static("uploads/coverImages")
-);
+// // static
+// app.use(
+//   helmet({
+//     crossOriginResourcePolicy: { policy: "cross-origin" },
+//     contentSecurityPolicy: {
+//       directives: {
+//         defaultSrc: ["'self'"],
+//         imgSrc: [
+//           "'self'",
+//           "data:",
+//           "https://bookstore-mern-frontend-dusky.vercel.app",
+//         ], // Allow images from your server
+//       },
+//     },
+//   })
+// );
+
+// app.use(
+//   "/uploads/coverImages",
+//   (req, res, next) => {
+//     if (req.url.includes("..") || req.url.includes(".git")) {
+//       return res.status(403).json({ error: "Access Denied" });
+//     }
+//     next();
+//   },
+//   express.static("uploads/coverImages")
+// );
 
 async function main() {
   await mongoose.connect(process.env.MONGODB_URI);

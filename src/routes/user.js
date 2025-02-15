@@ -1,6 +1,7 @@
 const express = require("express");
 const User = require("../models/user");
 const jwt = require("jsonwebtoken");
+const { changePassword } = require("../controller/user");
 
 const jwt_secret = process.env.JWT_SECRET;
 
@@ -30,5 +31,7 @@ router.post("/login", async (req, res) => {
     res.status(500).send("something went wrong");
   }
 });
+
+router.post("/change-password", changePassword);
 
 module.exports = router;
