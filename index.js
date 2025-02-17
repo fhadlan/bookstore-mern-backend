@@ -66,6 +66,10 @@ async function main() {
   await mongoose.connect(process.env.MONGODB_URI);
 }
 
+app.get("/", (req, res) => {
+  res.send("Hello, World!");
+});
+
 main()
   .then(() => console.log("mongodb connected"))
   .catch((err) => console.log(err));
