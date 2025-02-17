@@ -64,9 +64,6 @@ app.use(helmet());
 
 async function main() {
   await mongoose.connect(process.env.MONGODB_URI);
-  app.use("/", (req, res) => {
-    res.send("hello worlds");
-  });
 }
 
 main()
