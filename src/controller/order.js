@@ -48,8 +48,11 @@ const cancelOrder = async (req, res) => {
 
 const manageOrders = async (req, res) => {
   try {
-    const { page } = req.params;
-    const orders = await Order.find()
+    const { page, status, id } = req.query;
+    const filter = {};
+    status && (filter.status = status);
+    id && (filter._id = id);
+    const orders = await Order.find(filter)
       .sort({ createdAt: -1 })
       .populate("productsId", "title newPrice")
       .skip((page - 1) * 10)
@@ -64,9 +67,23 @@ const manageOrders = async (req, res) => {
   }
 };
 
+const updateOrderStatus = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+    const updatedOrder = await Order.findByIdAndUpdate(id, { status });
+    !updatedOrder && res.status(404).send("Order doesn't exist");
+    res.status(200).send({ message: "Order status updated successfully" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send("something went wrong");
+  }
+};
+
 module.exports = {
   createOrder,
   getUserOrders,
   cancelOrder,
   manageOrders,
+  updateOrderStatus,
 };
