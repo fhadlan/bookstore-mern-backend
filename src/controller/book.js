@@ -157,6 +157,15 @@ const getBooksTable = async (req, res) => {
   }
 };
 
+const bannerImage = async (req, res) => {
+  try {
+    const book = await Book.find().sort({ createdAt: -1 }).limit(3);
+    res.status(200).json(book);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 module.exports = {
   postBook,
   getAllBooks,
@@ -164,4 +173,5 @@ module.exports = {
   updateBook,
   deleteBook,
   getBooksTable,
+  bannerImage,
 };

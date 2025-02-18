@@ -9,6 +9,7 @@ const {
   updateBook,
   deleteBook,
   getBooksTable,
+  bannerImage,
 } = require("../controller/book");
 
 const verifyUserToken = require("../middleware/verifyUserToken");
@@ -28,6 +29,7 @@ router.put(
   updateBook
 );
 router.delete("/delete-book/:id", verifyUserToken, deleteBook);
-router.get("/get-books-table/:page", getBooksTable);
+router.get("/get-books-table/:page", verifyUserToken, getBooksTable);
+router.get("/banner/banner-image", bannerImage);
 
 module.exports = router;
