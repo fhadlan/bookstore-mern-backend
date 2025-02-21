@@ -166,6 +166,21 @@ const bannerImage = async (req, res) => {
   }
 };
 
+const searchBook = async (req, res) => {
+  try {
+    const { title, page } = req.query;
+    const query = title ? { title: { $regex: title, $options: "i" } } : {};
+    const books = await Book.find(query)
+      .skip((page - 1) * 10)
+      .limit(10);
+    const count = await Book.countDocuments(query);
+    const totalPages = Math.ceil(count / 10);
+    res.status(200).send({ books, totalPages });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 module.exports = {
   postBook,
   getAllBooks,
@@ -174,4 +189,5 @@ module.exports = {
   deleteBook,
   getBooksTable,
   bannerImage,
+  searchBook,
 };
