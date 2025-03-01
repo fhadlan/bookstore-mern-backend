@@ -1,7 +1,9 @@
 const express = require("express");
 const User = require("../models/user");
 const jwt = require("jsonwebtoken");
-const { changePassword } = require("../controller/user");
+const { changePassword, updateProfile } = require("../controller/user");
+const authMiddleware = require("../middleware/authMiddleware");
+const upload = require("../middleware/multerUpload");
 
 const jwt_secret = process.env.JWT_SECRET;
 
@@ -33,5 +35,11 @@ router.post("/login", async (req, res) => {
 });
 
 router.post("/change-password", changePassword);
+router.post(
+  "/update-profile",
+  authMiddleware,
+  upload.single("photo"),
+  updateProfile
+);
 
 module.exports = router;
