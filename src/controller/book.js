@@ -1,6 +1,4 @@
 const Book = require("../models/book");
-const path = require("path");
-const fs = require("fs");
 const cloudinary = require("cloudinary").v2;
 const streamifier = require("streamifier");
 
