@@ -1,8 +1,9 @@
-const express = require("express");
 require("dotenv").config();
+const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const helmet = require("helmet");
+const cookieParser = require("cookie-parser");
 
 //routes
 const bookRoute = require("./src/routes/book");
@@ -15,6 +16,7 @@ const port = process.env.PORT || 3000;
 
 //middleware
 app.use(express.json());
+app.use(cookieParser());
 app.use(
   cors({
     origin: [

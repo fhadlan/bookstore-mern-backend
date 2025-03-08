@@ -2,6 +2,10 @@ const admin = require("../firebase/firebaseAdmin");
 const { getAuth } = require("firebase-admin/auth");
 const cloudinary = require("cloudinary").v2;
 const streamifier = require("streamifier");
+const bcrypt = require("bcrypt");
+const User = require("../models/user");
+const jwt = require("jsonwebtoken");
+const jwt_secret = process.env.JWT_SECRET;
 
 //cloudinary config
 
@@ -10,6 +14,43 @@ cloudinary.config({
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
+
+const login = async (req, res) => {
+  const { email, password } = req.body;
+  try {
+    const user = await User.findOne({ email });
+    if (!user) return res.status(401).json({ message: "Invalid Credential" });
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) return res.status(401).json({ message: "Invalid password" });
+
+    const token = jwt.sign(
+      { id: user._id, email: user.email, isAdmin: user.isAdmin },
+      jwt_secret,
+      { expiresIn: "1h" }
+    );
+
+    res.cookie("adminToken", token, {
+      httpOnly: true,
+      secure: false,
+      sameSite: "strict",
+      maxAge: 60 * 60 * 1000,
+    });
+
+    res.status(200).json({
+      message: "Login successful",
+      token: token,
+      user: { name: user.name, isAdmin: user.isAdmin },
+    });
+  } catch (error) {
+    res.status(500).send("something went wrong");
+  }
+};
+
+const getAdmin = async (req, res) => {
+  //for admin authentication check in frontend
+  res.status(200).json({ message: "Admin dashboard" });
+};
 
 const changePassword = async (req, res) => {
   const { uid, currentPassword, newPassword } = req.body;
@@ -65,4 +106,4 @@ const updateProfile = async (req, res) => {
   }
 };
 
-module.exports = { changePassword, updateProfile };
+module.exports = { changePassword, updateProfile, login, getAdmin };

@@ -3,10 +3,12 @@ const jwt = require("jsonwebtoken");
 const jwt_secret = process.env.JWT_SECRET;
 
 const verifyUserToken = (req, res, next) => {
-  const token = req.headers["authorization"]?.split(" ")[1];
+  const token = req.cookies.adminToken;
+
   if (!token) {
-    return res.status(403).send("A token is required for authentication");
+    return res.status(401).send("Unauthorized");
   }
+
   try {
     const decoded = jwt.verify(token, jwt_secret);
     req.user = decoded;
