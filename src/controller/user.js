@@ -52,6 +52,11 @@ const getAdmin = async (req, res) => {
   res.status(200).json({ message: "Admin dashboard" });
 };
 
+const adminLogout = async (req, res) => {
+  res.clearCookie("adminToken");
+  res.status(200).json({ message: "Logout successful" });
+};
+
 const changePassword = async (req, res) => {
   const { uid, currentPassword, newPassword } = req.body;
   try {
@@ -106,4 +111,10 @@ const updateProfile = async (req, res) => {
   }
 };
 
-module.exports = { changePassword, updateProfile, login, getAdmin };
+module.exports = {
+  changePassword,
+  updateProfile,
+  login,
+  getAdmin,
+  adminLogout,
+};
