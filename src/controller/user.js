@@ -55,7 +55,12 @@ const getAdmin = async (req, res) => {
 };
 
 const adminLogout = async (req, res) => {
-  res.clearCookie("adminToken");
+  res.clearCookie("adminToken", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "none",
+    path: "/",
+  });
   res.status(200).json({ message: "Logout successful" });
 };
 
