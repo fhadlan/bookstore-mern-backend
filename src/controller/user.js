@@ -35,7 +35,6 @@ const login = async (req, res) => {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "none",
-      domain: "https://bookstore-mern-frontend-dusky.vercel.app",
       path: "/",
       maxAge: 60 * 60 * 1000,
     });
