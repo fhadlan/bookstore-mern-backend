@@ -32,8 +32,10 @@ const login = async (req, res) => {
 
     res.cookie("adminToken", token, {
       httpOnly: true,
-      secure: false,
-      sameSite: "strict",
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "none",
+      domain: "bookstore-mern-frontend-dusky.vercel.app",
+      path: "/",
       maxAge: 60 * 60 * 1000,
     });
 
