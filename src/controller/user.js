@@ -46,7 +46,7 @@ const login = async (req, res) => {
       user: { name: user.name, isAdmin: user.isAdmin },
     });
   } catch (error) {
-    res.status(500).send("something went wrong");
+    res.status(500).send(error.message);
   }
 };
 
