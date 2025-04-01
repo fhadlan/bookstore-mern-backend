@@ -31,18 +31,17 @@ const login = async (req, res) => {
       { expiresIn: "1h" }
     );
 
+    console.log(process.env.NODE_ENV === "production");
     res.cookie("adminToken", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "none",
+      sameSite: "strict",
       path: "/",
       maxAge: 60 * 60 * 1000,
     });
 
     res.status(200).json({
       message: "Login successful",
-      token: token,
-      user: { name: user.name, isAdmin: user.isAdmin },
     });
   } catch (error) {
     res.status(500).send(error.message);
@@ -58,7 +57,7 @@ const adminLogout = async (req, res) => {
   res.clearCookie("adminToken", {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    sameSite: "none",
+    sameSite: "strict",
     path: "/",
   });
   res.status(200).json({ message: "Logout successful" });
