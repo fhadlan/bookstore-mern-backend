@@ -63,6 +63,23 @@ const adminLogout = async (req, res) => {
   res.status(200).json({ message: "Logout successful" });
 };
 
+const createUser = async (req, res) => {
+  const { name, email, password, isAdmin } = req.body;
+  try {
+    const user = new User({
+      name,
+      email,
+      password,
+      isAdmin: isAdmin.length > 0 ? true : false,
+    });
+    await user.save();
+    res.status(200).json({ message: "User created successfully", user });
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+};
+
+//customer user
 const changePassword = async (req, res) => {
   const { uid, currentPassword, newPassword } = req.body;
   try {
@@ -123,4 +140,5 @@ module.exports = {
   login,
   getAdmin,
   adminLogout,
+  createUser,
 };
