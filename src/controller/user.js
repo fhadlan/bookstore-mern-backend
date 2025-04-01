@@ -31,7 +31,6 @@ const login = async (req, res) => {
       { expiresIn: "1h" }
     );
 
-    console.log(process.env.NODE_ENV === "production");
     res.cookie("adminToken", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
@@ -50,7 +49,8 @@ const login = async (req, res) => {
 
 const getAdmin = async (req, res) => {
   //for admin authentication check in frontend
-  res.status(200).json({ message: "Admin dashboard" });
+  const { isAdmin } = req.user;
+  res.status(200).json({ message: "Admin dashboard", isAdmin });
 };
 
 const adminLogout = async (req, res) => {
