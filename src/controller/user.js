@@ -75,7 +75,11 @@ const createUser = async (req, res) => {
     await user.save();
     res.status(200).json({ message: "User created successfully", user });
   } catch (error) {
-    res.status(500).send(error.message);
+    // console.log(error.message);
+    if (error.code === 11000) {
+      return res.status(400).json({ message: "User already exists" });
+    }
+    res.status(500).json({ message: error.message });
   }
 };
 
