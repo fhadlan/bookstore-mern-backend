@@ -83,6 +83,22 @@ const createUser = async (req, res) => {
   }
 };
 
+const changePasswordAdmin = async (req, res) => {
+  // console.log(req.user);
+  const user = await User.findById(req.user.id);
+  const { currentPassword, newPassword } = req.body;
+  try {
+    const isMatch = await bcrypt.compare(currentPassword, user.password);
+    if (!isMatch) return res.status(401).json({ message: "Invalid password" });
+    user.password = newPassword;
+    await user.save();
+    res.status(200).json({ message: "Password changed successfully" });
+  } catch (error) {
+    // console.log(error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
 //customer user
 const changePassword = async (req, res) => {
   const { uid, currentPassword, newPassword } = req.body;
@@ -145,4 +161,5 @@ module.exports = {
   getAdmin,
   adminLogout,
   createUser,
+  changePasswordAdmin,
 };
