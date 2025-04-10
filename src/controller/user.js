@@ -63,6 +63,14 @@ const adminLogout = async (req, res) => {
   res.status(200).json({ message: "Logout successful" });
 };
 
+const getUsers = async (req, res) => {
+  const { id } = req.user;
+  try {
+    const users = await User.find({ _id: { $ne: id } });
+    console.log(users);
+    res.status(200).send(users);
+  } catch (error) {}
+};
 const createUser = async (req, res) => {
   const { name, email, password, isAdmin } = req.body;
   try {
@@ -162,4 +170,5 @@ module.exports = {
   adminLogout,
   createUser,
   changePasswordAdmin,
+  getUsers,
 };

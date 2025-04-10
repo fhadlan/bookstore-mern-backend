@@ -7,6 +7,7 @@ const {
   adminLogout,
   createUser,
   changePasswordAdmin,
+  getUsers,
 } = require("../controller/user");
 const authMiddleware = require("../middleware/authMiddleware");
 const verifyUserToken = require("../middleware/verifyUserToken");
@@ -18,6 +19,7 @@ router.post("/login", login);
 router.post("/logout", verifyUserToken, adminLogout);
 
 router.get("/dashboard", verifyUserToken, getAdmin);
+router.get("/users", verifyUserToken, getUsers);
 router.post("/create-user", verifyUserToken, createUser);
 router.put("/change-password-admin", verifyUserToken, changePasswordAdmin);
 
