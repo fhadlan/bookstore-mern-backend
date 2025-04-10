@@ -66,7 +66,7 @@ const adminLogout = async (req, res) => {
 const getUsers = async (req, res) => {
   const { id } = req.user;
   const { page, search } = req.query;
-  console.log(page, search);
+  // console.log(page, search);
   try {
     const users = await User.find({ _id: { $ne: id } })
       .skip((page - 1) * 10)
@@ -107,6 +107,21 @@ const changePasswordAdmin = async (req, res) => {
     user.password = newPassword;
     await user.save();
     res.status(200).json({ message: "Password changed successfully" });
+  } catch (error) {
+    // console.log(error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
+const patchAdminStatus = async (req, res) => {
+  const { id } = req.params;
+  const { isAdmin } = req.body;
+  // console.log(id, isAdmin);
+  try {
+    const user = await User.findById(id);
+    user.isAdmin = isAdmin;
+    await user.save();
+    res.status(200).json({ message: "Admin status updated successfully" });
   } catch (error) {
     // console.log(error);
     res.status(500).json({ message: error.message });
@@ -177,4 +192,5 @@ module.exports = {
   createUser,
   changePasswordAdmin,
   getUsers,
+  patchAdminStatus,
 };

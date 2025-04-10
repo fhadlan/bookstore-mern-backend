@@ -8,6 +8,7 @@ const {
   createUser,
   changePasswordAdmin,
   getUsers,
+  patchAdminStatus,
 } = require("../controller/user");
 const authMiddleware = require("../middleware/authMiddleware");
 const verifyUserToken = require("../middleware/verifyUserToken");
@@ -22,6 +23,7 @@ router.get("/dashboard", verifyUserToken, getAdmin);
 router.get("/users", verifyUserToken, getUsers);
 router.post("/create-user", verifyUserToken, createUser);
 router.put("/change-password-admin", verifyUserToken, changePasswordAdmin);
+router.patch("/patch-admin-status/:id", verifyUserToken, patchAdminStatus);
 
 //customer user
 router.post("/change-password", changePassword);
