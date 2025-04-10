@@ -65,10 +65,16 @@ const adminLogout = async (req, res) => {
 
 const getUsers = async (req, res) => {
   const { id } = req.user;
+  const { page, search } = req.query;
+  console.log(page, search);
   try {
-    const users = await User.find({ _id: { $ne: id } });
-    console.log(users);
-    res.status(200).send(users);
+    const users = await User.find({ _id: { $ne: id } })
+      .skip((page - 1) * 10)
+      .limit(10);
+    const count = await User.countDocuments();
+    const totalPages = Math.ceil(count / 10);
+    //console.log(users);
+    res.status(200).send({ users, totalPages });
   } catch (error) {}
 };
 const createUser = async (req, res) => {
