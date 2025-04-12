@@ -137,6 +137,17 @@ const patchAdminStatus = async (req, res) => {
   }
 };
 
+const deleteUser = async (req, res) => {
+  const { id } = req.params;
+  try {
+    await User.findByIdAndDelete(id);
+    res.status(200).json({ message: "User deleted successfully" });
+  } catch (error) {
+    // console.log(error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
 //customer user
 const changePassword = async (req, res) => {
   const { uid, currentPassword, newPassword } = req.body;
@@ -202,4 +213,5 @@ module.exports = {
   changePasswordAdmin,
   getUsers,
   patchAdminStatus,
+  deleteUser,
 };
