@@ -66,9 +66,18 @@ const adminLogout = async (req, res) => {
 const getUsers = async (req, res) => {
   const { id } = req.user;
   const { page, search } = req.query;
-  // console.log(page, search);
+  //console.log(page, search);
+  const query = search
+    ? {
+        _id: { $ne: id },
+        $or: [
+          { name: { $regex: search, $options: "i" } },
+          { email: { $regex: search, $options: "i" } },
+        ],
+      }
+    : { _id: { $ne: id } };
   try {
-    const users = await User.find({ _id: { $ne: id } })
+    const users = await User.find(query)
       .skip((page - 1) * 10)
       .limit(10);
     const count = await User.countDocuments();
