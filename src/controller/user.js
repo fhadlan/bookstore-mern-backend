@@ -107,8 +107,8 @@ const createUser = async (req, res) => {
 };
 
 const changePasswordAdmin = async (req, res) => {
-  // console.log(req.user);
-  const user = await User.findById(req.user.id);
+  //console.log(req.query.id);
+  const user = await User.findById(req.query.id ? req.query.id : req.user.id);
   const { currentPassword, newPassword } = req.body;
   try {
     const isMatch = await bcrypt.compare(currentPassword, user.password);
