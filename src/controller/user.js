@@ -171,8 +171,7 @@ const updateProfile = async (req, res) => {
   };
   try {
     if (req.file) {
-      //console.log(user.photoURL);
-      if (user.photoURL.startsWith(cloudinaryBaseURL)) {
+      if (user.photoURL?.startsWith(cloudinaryBaseURL)) {
         const getPublicId = (url) => {
           const parts = url.split("/");
           const filename = parts[parts.length - 1];
