@@ -6,12 +6,20 @@ const bookSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    author: {
+      type: String,
+      required: true,
+    },
     description: {
       type: String,
       required: true,
     },
     category: {
       type: String,
+      required: true,
+    },
+    quantity: {
+      type: Number,
       required: true,
     },
     trending: {
@@ -22,19 +30,27 @@ const bookSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    oldPrice: {
+    price: {
       type: Number,
       required: true,
     },
-    newPrice: {
+    discount: {
       type: Number,
-      required: true,
+      default: 0,
+      min: 0,
+      max: 100,
     },
   },
   {
     timestamps: true,
   }
 );
+
+bookSchema.virtual("discountedPrice").get(function () {
+  return (this.price * (100 - this.discount)) / 100;
+});
+
+bookSchema.set("toJSON", { virtuals: true });
 
 const Book = mongoose.model("Book", bookSchema);
 
