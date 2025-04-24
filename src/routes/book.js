@@ -11,6 +11,7 @@ const {
   getBooksTable,
   bannerImage,
   searchBook,
+  getCartItemsDetails,
 } = require("../controller/book");
 
 const verifyUserToken = require("../middleware/verifyUserToken");
@@ -33,5 +34,6 @@ router.delete("/delete-book/:id", verifyUserToken, deleteBook);
 router.get("/get-books-table/:page", verifyUserToken, getBooksTable);
 router.get("/banner/banner-image", bannerImage);
 router.get("/search", searchBook);
+router.post("/cart", getCartItemsDetails);
 
 module.exports = router;

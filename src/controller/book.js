@@ -179,6 +179,38 @@ const searchBook = async (req, res) => {
   }
 };
 
+const getCartItemsDetails = async (req, res) => {
+  const items = req.body;
+
+  try {
+    const bookIds = items.map((item) => item._id);
+    const books = await Book.find({ _id: { $in: bookIds } });
+
+    const result = items.map((item) => {
+      const book = books.find((book) => book._id.toString() === item._id);
+      if (!book) {
+        return { _id: item._id, error: "Book not found" };
+      }
+
+      const isAvailable = book.quantity >= item.quantity;
+      return {
+        _id: item._id,
+        title: book.title,
+        coverImage: book.coverImage,
+        category: book.category,
+        quantity: item.quantity,
+        price: book.discountedPrice,
+        total: book.discountedPrice * item.quantity,
+        isAvailable,
+      };
+    });
+
+    res.status(200).json(result);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 module.exports = {
   postBook,
   getAllBooks,
@@ -188,4 +220,5 @@ module.exports = {
   getBooksTable,
   bannerImage,
   searchBook,
+  getCartItemsDetails,
 };
