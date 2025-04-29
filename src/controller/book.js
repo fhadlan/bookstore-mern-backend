@@ -199,6 +199,7 @@ const getCartItemsDetails = async (req, res) => {
         coverImage: book.coverImage,
         category: book.category,
         quantity: item.quantity,
+        stock: book.quantity,
         price: book.discountedPrice,
         total: book.discountedPrice * item.quantity,
         isAvailable,
