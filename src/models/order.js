@@ -1,5 +1,25 @@
 const mongoose = require("mongoose");
 
+const itemsSchema = new mongoose.Schema({
+  productId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Book",
+    required: true,
+  },
+  quantity: {
+    type: Number,
+    required: true,
+  },
+  priceAtOrder: {
+    type: Number,
+    required: true,
+  },
+  total: {
+    type: Number,
+    required: true,
+  },
+});
+
 const orderSchema = new mongoose.Schema(
   {
     userId: {
@@ -40,17 +60,7 @@ const orderSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    productsId: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Book",
-        required: true,
-      },
-    ],
-    totalPrice: {
-      type: Number,
-      required: true,
-    },
+    items: [itemsSchema],
     status: {
       type: String,
       required: true,
@@ -62,6 +72,14 @@ const orderSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+
+orderSchema.virtual("finalAmount").get(function () {
+  return this.items.reduce((total, item) => total + item.total, 0);
+});
+
+orderSchema.set("toJSON", {
+  virtuals: true,
+});
 
 const Order = mongoose.model("Order", orderSchema);
 

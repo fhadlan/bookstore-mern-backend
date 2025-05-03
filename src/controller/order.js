@@ -1,15 +1,61 @@
+const { default: mongoose } = require("mongoose");
+const Book = require("../models/book");
 const Order = require("../models/order");
 
 const createOrder = async (req, res) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
   try {
-    const newOrder = await Order({ ...req.body });
-    const savedOrder = await newOrder.save();
-    res
-      .status(200)
-      .send({ message: "Order created successfully", data: savedOrder });
+    const { cartItems, userId, name, email, address, phone } = req.body;
+    const bookIds = cartItems.map((item) => item._id);
+    const books = await Book.find({ _id: { $in: bookIds } });
+
+    const bulkOps = [];
+    const items = cartItems.map((item) => {
+      const book = books.find((book) => book._id.toString() === item._id);
+
+      if (!book) {
+        throw new Error("Book not found");
+      }
+
+      if (book.quantity < item.quantity) {
+        throw new Error("Book out of stock");
+      }
+
+      bulkOps.push({
+        updateOne: {
+          filter: { _id: book._id, quantity: { $gte: item.quantity } },
+          update: { $inc: { quantity: -item.quantity } },
+        },
+      });
+
+      return {
+        productId: book._id,
+        quantity: item.quantity,
+        priceAtOrder: book.discountedPrice,
+        total: (book.discountedPrice * item.quantity).toFixed(1),
+      };
+    });
+
+    console.log(req.body);
+    await Book.bulkWrite(bulkOps, { session });
+    const order = await Order.create({
+      userId,
+      name,
+      email,
+      address,
+      phone,
+      items,
+    });
+    await session.commitTransaction();
+    res.status(200).json(order);
   } catch (error) {
+    await session.abortTransaction();
     console.log(error);
-    res.status(500).send("something went wrong");
+    res.status(500).send(error.message);
+  } finally {
+    session.endSession();
   }
 };
 
@@ -18,13 +64,14 @@ const getUserOrders = async (req, res) => {
     const { uid, page } = req.params;
 
     const orders = await Order.find({ userId: uid })
-      .populate("productsId", "title newPrice")
+      .populate("items.productId", "title")
       .skip((page - 1) * 10)
       .limit(10)
       .sort({ createdAt: -1 });
     const count = await Order.countDocuments({ userId: uid });
     const totalPages = Math.ceil(count / 10);
     !orders && res.status(404).send("You have no orders");
+    console.log(orders[0].items);
     res.status(200).json({ orders, totalPages });
   } catch (error) {
     console.log(error);
@@ -33,16 +80,35 @@ const getUserOrders = async (req, res) => {
 };
 
 const cancelOrder = async (req, res) => {
+  const { _id } = req.params;
+  const session = await mongoose.startSession();
   try {
-    const { _id } = req.params;
-    const canceledOrder = await Order.findByIdAndUpdate(_id, {
-      status: "cancelled",
-    });
-    !canceledOrder && res.status(404).send("Order doesn't exist");
+    session.startTransaction();
+    const order = await Order.findById(_id).session(session);
+    if (!order) throw new Error("Order not found");
+
+    if (order.status === "cancelled") {
+      throw new Error("Order already cancelled");
+    }
+    const bulkOps = order.items.map((item) => ({
+      updateOne: {
+        filter: { _id: item.productId },
+        update: { $inc: { quantity: item.quantity } },
+      },
+    }));
+
+    await Book.bulkWrite(bulkOps, { session });
+
+    order.status = "cancelled";
+    await order.save({ session });
+
+    await session.commitTransaction();
     res.status(200).send({ message: "Order canceled successfully" });
   } catch (error) {
     console.log(error);
     res.status(500).send("something went wrong");
+  } finally {
+    session.endSession();
   }
 };
 
